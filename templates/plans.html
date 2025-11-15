@@ -1,0 +1,370 @@
+{% extends "base_chat.html" %}
+
+{% block title %}Subscription Plans - PluginForge Studio{% endblock %}
+
+{% block header_title %}Subscription Plans{% endblock %}
+
+{% block extra_css %}
+<style>
+    .plans-container {
+        padding: 60px 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .plans-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+    
+    .plans-header h2 {
+        font-size: 36px;
+        font-weight: 700;
+        color: #2F3338;
+        margin-bottom: 16px;
+    }
+    
+    .plans-header p {
+        font-size: 18px;
+        color: #6F7275;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 32px;
+        margin-bottom: 60px;
+    }
+    
+    .plan-card {
+        background: #FFFFFF;
+        border: 2px solid #C2C5C9;
+        border-radius: 16px;
+        padding: 40px;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .plan-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(47, 51, 56, 0.15);
+    }
+    
+    .plan-card.featured {
+        border-color: #FC8805;
+        background: linear-gradient(135deg, #FFFFFF 0%, #FEE8B7 100%);
+        box-shadow: 0 8px 24px rgba(252, 136, 5, 0.2);
+    }
+    
+    .plan-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #FC8805;
+        color: #2F3338;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .plan-name {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2F3338;
+        margin-bottom: 12px;
+    }
+    
+    .plan-price {
+        font-size: 48px;
+        font-weight: 800;
+        color: #FC8805;
+        margin-bottom: 8px;
+    }
+    
+    .plan-price span {
+        font-size: 18px;
+        color: #6F7275;
+        font-weight: 400;
+    }
+    
+    .plan-description {
+        color: #6F7275;
+        font-size: 15px;
+        margin-bottom: 32px;
+        line-height: 1.6;
+    }
+    
+    .plan-features {
+        list-style: none;
+        margin-bottom: 32px;
+    }
+    
+    .plan-features li {
+        padding: 12px 0;
+        color: #3E4146;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .plan-features li i {
+        color: #FC8805;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    
+    .plan-features li.disabled {
+        color: #C2C5C9;
+        text-decoration: line-through;
+    }
+    
+    .plan-features li.disabled i {
+        color: #C2C5C9;
+    }
+    
+    .plan-button {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        letter-spacing: 0.5px;
+    }
+    
+    .plan-button.primary {
+        background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+        color: #2F3338;
+        box-shadow: 0 4px 12px rgba(252, 136, 5, 0.3);
+    }
+    
+    .plan-button.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(252, 136, 5, 0.4);
+    }
+    
+    .plan-button.secondary {
+        background: transparent;
+        color: #FC8805;
+        border: 2px solid #FC8805;
+    }
+    
+    .plan-button.secondary:hover {
+        background: #FC8805;
+        color: #2F3338;
+    }
+    
+    .plan-button.current {
+        background: #C2C5C9;
+        color: #3E4146;
+        cursor: not-allowed;
+    }
+    
+    .faq-section {
+        max-width: 800px;
+        margin: 80px auto 0;
+    }
+    
+    .faq-section h3 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #2F3338;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .faq-item {
+        background: #FFFFFF;
+        border: 2px solid #C2C5C9;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+    }
+    
+    .faq-question {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2F3338;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .faq-question i {
+        color: #FC8805;
+    }
+    
+    .faq-answer {
+        color: #6F7275;
+        font-size: 15px;
+        line-height: 1.7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="plans-container">
+    <div class="plans-header">
+        <h2>Choose Your Perfect Plan</h2>
+        <p>Unlock the full potential of plugin development with our flexible subscription plans</p>
+    </div>
+    
+    <div class="plans-grid">
+        <!-- Basic Plan -->
+        <div class="plan-card">
+            <div class="plan-name">Basic</div>
+            <div class="plan-price">Free<span></span></div>
+            <div class="plan-description">Perfect for trying out PluginForge Studio</div>
+            
+            <ul class="plan-features">
+                <li><i class="fas fa-check-circle"></i> 5 plugins per month</li>
+                <li><i class="fas fa-check-circle"></i> Basic chat support</li>
+                <li><i class="fas fa-check-circle"></i> Minecraft 1.20+ support</li>
+                <li><i class="fas fa-check-circle"></i> Standard compilation</li>
+                <li class="disabled"><i class="fas fa-times-circle"></i> Plugin modification</li>
+                <li class="disabled"><i class="fas fa-times-circle"></i> Priority support</li>
+                <li class="disabled"><i class="fas fa-times-circle"></i> Advanced features</li>
+            </ul>
+            
+            <button class="plan-button current">
+                <i class="fas fa-check"></i> Current Plan
+            </button>
+        </div>
+        
+        <!-- Pro Plan - Featured -->
+        <div class="plan-card featured">
+            <div class="plan-badge">Most Popular</div>
+            <div class="plan-name">Pro</div>
+            <div class="plan-price">$9<span>/month</span></div>
+            <div class="plan-description">For serious plugin developers</div>
+            
+            <ul class="plan-features">
+                <li><i class="fas fa-check-circle"></i> 50 plugins per month</li>
+                <li><i class="fas fa-check-circle"></i> Advanced AI chat support</li>
+                <li><i class="fas fa-check-circle"></i> All Minecraft versions</li>
+                <li><i class="fas fa-check-circle"></i> Fast compilation</li>
+                <li><i class="fas fa-check-circle"></i> Plugin modification</li>
+                <li><i class="fas fa-check-circle"></i> Priority email support</li>
+                <li class="disabled"><i class="fas fa-times-circle"></i> API access</li>
+            </ul>
+            
+            <button class="plan-button primary" onclick="upgradePlan('pro')">
+                <i class="fas fa-rocket"></i> Upgrade to Pro
+            </button>
+        </div>
+        
+        <!-- Premium Plan -->
+        <div class="plan-card">
+            <div class="plan-name">Premium</div>
+            <div class="plan-price">$19<span>/month</span></div>
+            <div class="plan-description">For professional teams and studios</div>
+            
+            <ul class="plan-features">
+                <li><i class="fas fa-check-circle"></i> Unlimited plugins</li>
+                <li><i class="fas fa-check-circle"></i> Expert AI assistance</li>
+                <li><i class="fas fa-check-circle"></i> All Minecraft versions</li>
+                <li><i class="fas fa-check-circle"></i> Instant compilation</li>
+                <li><i class="fas fa-check-circle"></i> Advanced modifications</li>
+                <li><i class="fas fa-check-circle"></i> 24/7 priority support</li>
+                <li><i class="fas fa-check-circle"></i> Full API access</li>
+            </ul>
+            
+            <button class="plan-button secondary" onclick="upgradePlan('premium')">
+                <i class="fas fa-crown"></i> Upgrade to Premium
+            </button>
+        </div>
+    </div>
+    
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h3>Frequently Asked Questions</h3>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle"></i>
+                Can I change my plan anytime?
+            </div>
+            <div class="faq-answer">
+                Yes! You can upgrade, downgrade, or cancel your subscription at any time. Changes take effect immediately, and we'll prorate any charges.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle"></i>
+                What payment methods do you accept?
+            </div>
+            <div class="faq-answer">
+                We accept all major credit cards (Visa, Mastercard, American Express) and PayPal for convenient and secure payments.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle"></i>
+                Is there a free trial for paid plans?
+            </div>
+            <div class="faq-answer">
+                Currently, we offer a generous Free plan so you can try PluginForge Studio. Once you're ready for more features, you can upgrade anytime.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question">
+                <i class="fas fa-question-circle"></i>
+                What happens if I exceed my monthly limit?
+            </div>
+            <div class="faq-answer">
+                If you reach your plan's limit, you can either wait until the next billing cycle or upgrade to a higher tier to continue generating plugins immediately.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function upgradePlan(plan) {
+    // Confirm upgrade
+    const planNames = {
+        'pro': 'Pro ($9/month)',
+        'premium': 'Premium ($19/month)'
+    };
+    
+    const confirmed = confirm(`Upgrade to ${planNames[plan]} plan?\n\nNote: This is a demo implementation. In production, you would be redirected to a secure payment page.`);
+    
+    if (!confirmed) return;
+    
+    try {
+        const response = await fetch('/api/subscription/upgrade', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ plan: plan })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(data.message || 'Subscription upgraded successfully!');
+            // Reload page to show new plan
+            window.location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Failed to upgrade subscription'));
+        }
+    } catch (error) {
+        console.error('Upgrade error:', error);
+        alert('Connection error. Please try again.');
+    }
+}
+</script>
+{% endblock %}

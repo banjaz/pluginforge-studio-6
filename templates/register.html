@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - PluginForge Studio</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #2F3338;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .register-container {
+            background: #3E4146;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            max-width: 460px;
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid #6F7275;
+        }
+        
+        .header {
+            background: #2F3338;
+            color: #FFFFFF;
+            padding: 48px 40px;
+            text-align: center;
+            border-bottom: 2px solid #FC8805;
+        }
+        
+        .header .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(252, 136, 5, 0.3);
+        }
+        
+        .header .logo i {
+            font-size: 40px;
+            color: #2F3338;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+        }
+        
+        .header p {
+            color: #C2C5C9;
+            font-size: 15px;
+            font-weight: 400;
+        }
+        
+        .form-content {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #FFFFFF;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+        
+        .form-group label i {
+            color: #FC8805;
+            margin-right: 6px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #2F3338;
+            border: 2px solid #6F7275;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #FFFFFF;
+            transition: all 0.3s;
+        }
+        
+        .form-group input::placeholder {
+            color: #6F7275;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #FC8805;
+            background: #3E4146;
+            box-shadow: 0 0 0 3px rgba(252, 136, 5, 0.1);
+        }
+        
+        .form-group small {
+            display: block;
+            margin-top: 6px;
+            color: #C2C5C9;
+            font-size: 12px;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+            color: #2F3338;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(252, 136, 5, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 32px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #6F7275;
+        }
+        
+        .divider span {
+            position: relative;
+            background: #3E4146;
+            padding: 0 16px;
+            color: #C2C5C9;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            color: #C2C5C9;
+            font-size: 14px;
+        }
+        
+        .login-link a {
+            color: #FC8805;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .login-link a:hover {
+            color: #FEE8B7;
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            animation: slideDown 0.3s;
+            font-weight: 500;
+        }
+        
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #FEE8B7;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #FEE8B7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #2F3338;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h1>Create Account</h1>
+            <p>Join PluginForge Studio Today</p>
+        </div>
+        
+        <div class="form-content">
+            <div id="alertContainer"></div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="username" name="username" placeholder="Choose a username" required minlength="3">
+                    <small>Used for login</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                    <small>We'll never share your email</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="password" name="password" placeholder="Create a secure password" required minlength="6">
+                    <small>Minimum 6 characters</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">
+                        <i class="fas fa-lock"></i> Confirm Password
+                    </label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary" id="registerBtn">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>or</span>
+            </div>
+            
+            <div class="login-link">
+                <p>Already have an account? <a href="{{ url_for('login') }}">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            showAlert('danger', '<i class="fas fa-exclamation-circle"></i> Passwords do not match');
+            return;
+        }
+        
+        const btn = document.getElementById('registerBtn');
+        const originalText = btn.innerHTML;
+        
+        btn.innerHTML = '<span class="spinner"></span> Creating account...';
+        btn.disabled = true;
+        
+        try {
+            const formData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: password
+            };
+            
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAlert('success', '<i class="fas fa-check-circle"></i> Account created successfully!');
+                btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1500);
+            } else {
+                showAlert('danger', '<i class="fas fa-exclamation-circle"></i> ' + (data.error || 'Failed to create account'));
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            showAlert('danger', '<i class="fas fa-exclamation-triangle"></i> Connection error. Please try again.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    });
+    
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.innerHTML = message;
+        
+        const container = document.getElementById('alertContainer');
+        container.innerHTML = '';
+        container.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+    </script>
+</body>
+</html>

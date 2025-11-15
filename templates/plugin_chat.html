@@ -1,0 +1,658 @@
+{% extends "base_chat.html" %}
+
+{% block title %}{{ plugin.name }} - PluginForge Studio{% endblock %}
+
+{% block header_title %}
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <i class="fas fa-puzzle-piece" style="color: #FC8805;"></i>
+        <span>{{ plugin.name }}</span>
+        <span style="padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 500;
+            {% if plugin.status == 'compiled' %}background: #dcfce7; color: #166534;
+            {% elif plugin.status == 'generating' %}background: #fef3c7; color: #92400e;
+            {% elif plugin.status == 'error' %}background: #fee2e2; color: #991b1b;
+            {% else %}background: #f3f4f6; color: #374151;{% endif %}">
+            {% if plugin.status == 'compiled' %}<i class="fas fa-check-circle"></i> Compilado
+            {% elif plugin.status == 'generating' %}<i class="fas fa-cog fa-spin"></i> Gerando
+            {% elif plugin.status == 'error' %}<i class="fas fa-exclamation-triangle"></i> Erro
+            {% else %}<i class="fas fa-edit"></i> Rascunho{% endif %}
+        </span>
+    </div>
+{% endblock %}
+
+{% block header_actions %}
+    {% if plugin.status == 'compiled' %}
+        <button class="btn-icon" onclick="downloadPlugin()" title="Download JAR" 
+                id="downloadBtn" 
+                data-plugin-id="{{ plugin.id }}">
+            <i class="fas fa-download"></i>
+        </button>
+    {% elif plugin.status == 'error' %}
+        <button class="btn-icon" onclick="showRecreateModal()" title="Recreate Plugin" 
+                style="background: #ef4444; color: white;">
+            <i class="fas fa-redo"></i>
+        </button>
+    {% endif %}
+    <button class="btn-icon" onclick="showPluginInfo()" title="Informações">
+        <i class="fas fa-info-circle"></i>
+    </button>
+{% endblock %}
+
+{% block content %}
+<div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+    <!-- Chat Messages Area -->
+    <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 24px; background: #f9fafb;">
+        <div style="max-width: 800px; margin: 0 auto;">
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="margin-bottom: 24px; {% if message.role == 'user' %}display: flex; justify-content: flex-end;{% endif %}">
+                        <div style="max-width: 80%; {% if message.role == 'user' %}background: #FC8805; color: white; border-radius: 18px 18px 4px 18px; padding: 12px 16px;
+                            {% else %}background: white; border: 1px solid #e5e5e5; border-radius: 18px 18px 18px 4px; padding: 16px 20px;{% endif %}">
+                            
+                            <!-- Message Header -->
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; {% if message.role == 'user' %}color: rgba(255,255,255,0.9);{% else %}color: #8e8e8e;{% endif %}">
+                                {% if message.role == 'user' %}
+                                    <i class="fas fa-user" style="font-size: 12px;"></i>
+                                    <span style="font-size: 12px; font-weight: 500;">{{ current_user.username }}</span>
+                                {% else %}
+                                    <i class="fas fa-robot" style="font-size: 12px;"></i>
+                                    <span style="font-size: 12px; font-weight: 500;">PluginForge AI</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Message Content -->
+                            {% if message.content_type == 'plugin_generation' and message.generated_code %}
+                                <div>
+                                    <p style="margin: 0 0 12px 0; line-height: 1.6; {% if message.role == 'user' %}color: white;{% else %}color: #171717;{% endif %}">
+                                        {{ message.content }}
+                                    </p>
+                                    <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px; margin-top: 12px;">
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <i class="fas fa-code" style="color: #16a34a;"></i>
+                                            <strong style="color: #166534; font-size: 13px;">Código Gerado com Sucesso</strong>
+                                        </div>
+                                        <div style="font-size: 12px; color: #166534;">
+                                            <div><strong>Package:</strong> {{ message.package_name }}</div>
+                                            <div><strong>Main Class:</strong> {{ message.main_code|length }} caracteres</div>
+                                            <div><strong>Plugin.yml:</strong> {{ message.plugin_yml|length }} caracteres</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div style="line-height: 1.6; {% if message.role == 'user' %}color: white;{% else %}color: #171717;{% endif %}">
+                                    {{ message.content|replace('\n', '<br>')|safe }}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Message Time -->
+                            <div style="margin-top: 8px; font-size: 11px; {% if message.role == 'user' %}color: rgba(255,255,255,0.7);{% else %}color: #a0a0a0;{% endif %}">
+                                {{ message.created_at.strftime('%H:%M') }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty Chat State -->
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: #8e8e8e;">
+                    <i class="fas fa-comments" style="font-size: 48px; opacity: 0.3; margin-bottom: 16px;"></i>
+                    <h3 style="font-size: 18px; font-weight: 600; color: #171717; margin-bottom: 8px;">
+                        Comece a Conversa
+                    </h3>
+                    <p style="font-size: 14px; max-width: 400px;">
+                        Use o chat para melhorar seu plugin, adicionar funcionalidades ou corrigir problemas.
+                    </p>
+                    
+                    <!-- Quick Action Suggestions -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; justify-content: center;">
+                        <button onclick="suggestPrompt('Adicione um sistema de economia ao plugin')" 
+                                style="padding: 8px 16px; background: white; border: 1px solid #e5e5e5; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                            💰 Adicionar economia
+                        </button>
+                        <button onclick="suggestPrompt('Melhore a performance do plugin')" 
+                                style="padding: 8px 16px; background: white; border: 1px solid #e5e5e5; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                            ⚡ Melhorar performance
+                        </button>
+                        <button onclick="suggestPrompt('Adicione comandos de administrador')" 
+                                style="padding: 8px 16px; background: white; border: 1px solid #e5e5e5; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                            🛠️ Comandos admin
+                        </button>
+                        <button onclick="suggestPrompt('Gere documentação completa do plugin')" 
+                                style="padding: 8px 16px; background: white; border: 1px solid #e5e5e5; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+                            📚 Gerar documentação
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Chat Input Area -->
+    <div style="border-top: 1px solid #e5e5e5; background: white; padding: 16px 24px;">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <form id="chatForm" style="display: flex; gap: 12px; align-items: flex-end;">
+                <div style="flex: 1; position: relative;">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Descreva melhorias ou funcionalidades para adicionar ao plugin..."
+                        style="width: 100%; min-height: 50px; max-height: 200px; padding: 12px 16px; border: 1px solid #e5e5e5; border-radius: 12px; font-size: 14px; font-family: inherit; resize: none; line-height: 1.5;"
+                        rows="1"
+                        required></textarea>
+                </div>
+                <button 
+                    type="submit" 
+                    id="sendBtn"
+                    style="width: 48px; height: 48px; background: #FC8805; border: none; border-radius: 12px; color: white; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+            
+            <!-- Helper Text -->
+            <div style="margin-top: 8px; font-size: 11px; color: #8e8e8e; text-align: center;">
+                Pressione Enter para enviar, Shift+Enter para nova linha
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Plugin Info Modal - UPGRADE 4: Fixed Scrolling -->
+<div id="pluginInfoModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(47, 51, 56, 0.8); z-index: 2000; align-items: center; justify-content: center;">
+    <div style="background: #3E4146; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow: hidden; position: relative; border: 2px solid #FC8805;">
+        <!-- Sticky Header -->
+        <div style="position: sticky; top: 0; background: #2F3338; padding: 20px 24px; border-bottom: 2px solid #FC8805; display: flex; justify-content: space-between; align-items: center; z-index: 10;">
+            <h3 style="font-size: 20px; font-weight: 600; color: #FFFFFF; margin: 0;">
+                <i class="fas fa-info-circle" style="color: #FC8805; margin-right: 8px;"></i>
+                Plugin Information
+            </h3>
+            <button onclick="hidePluginInfo()" style="width: 36px; height: 36px; border: none; background: #ef4444; border-radius: 50%; cursor: pointer; color: white; font-size: 16px; transition: all 0.3s; flex-shrink: 0;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Scrollable Content -->
+        <div style="padding: 24px; overflow-y: auto; max-height: calc(90vh - 80px);">
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 12px; color: #C2C5C9; margin-bottom: 4px;">Plugin Name</div>
+                <div style="font-size: 14px; color: #FFFFFF; font-weight: 500;">{{ plugin.name }}</div>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 12px; color: #8e8e8e; margin-bottom: 4px;">Descrição</div>
+                <div style="font-size: 14px; color: #171717; line-height: 1.5;">{{ plugin.description }}</div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <div style="font-size: 12px; color: #8e8e8e; margin-bottom: 4px;">Versão</div>
+                    <div style="font-size: 14px; color: #171717; font-weight: 500;">{{ plugin.version }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #8e8e8e; margin-bottom: 4px;">Minecraft</div>
+                    <div style="font-size: 14px; color: #171717; font-weight: 500;">{{ plugin.minecraft_version }}</div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 12px; color: #8e8e8e; margin-bottom: 4px;">Autor</div>
+                <div style="font-size: 14px; color: #171717; font-weight: 500;">{{ plugin.plugin_author }}</div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <div style="font-size: 12px; color: #8e8e8e; margin-bottom: 4px;">Criado em</div>
+                    <div style="font-size: 14px; color: #171717;">{{ plugin.created_at.strftime('%d/%m/%Y %H:%M') }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: #8e8e8e; margin-bottom: 4px;">Atualizado em</div>
+                    <div style="font-size: 14px; color: #171717;">{{ plugin.updated_at.strftime('%d/%m/%Y %H:%M') }}</div>
+                </div>
+            </div>
+            
+            {% if plugin.features %}
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 12px; color: #8e8e8e; margin-bottom: 8px;">Funcionalidades</div>
+                <div style="background: #f9fafb; border-radius: 8px; padding: 12px; font-size: 13px; color: #171717; line-height: 1.6;">
+                    {{ plugin.features|replace('\n', '<br>')|safe }}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if plugin.status == 'compiled' %}
+            <div style="margin-top: 20px; padding: 16px; background: #f0f9ff; border-radius: 12px; border: 1px solid #bae6fd;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <i class="fas fa-download" style="color: #0284c7;"></i>
+                    <div style="font-size: 14px; font-weight: 600; color: #0c4a6e;">Como Instalar</div>
+                </div>
+                <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: #0c4a6e; line-height: 1.8;">
+                    <li>Clique no botão <strong>Download</strong> no topo da página</li>
+                    <li>Copie o arquivo <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px;">{{ plugin.name }}-{{ plugin.version }}.jar</code> para a pasta <code style="background: #e0f2fe; padding: 2px 6px; border-radius: 4px;">plugins/</code> do seu servidor</li>
+                    <li>Reinicie o servidor Minecraft</li>
+                    <li>Pronto! O plugin está ativo 🎉</li>
+                </ol>
+                <div style="margin-top: 12px; padding: 8px 12px; background: white; border-radius: 8px; font-size: 12px; color: #475569;">
+                    <i class="fas fa-info-circle" style="color: #64748b;"></i>
+                    <strong>Nota:</strong> Todas as dependências já estão incluídas no arquivo JAR.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Recreate Plugin Modal -->
+<div id="recreateModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 16px; padding: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="font-size: 20px; font-weight: 600; color: #171717; margin: 0;">
+                <i class="fas fa-redo" style="color: #ef4444; margin-right: 8px;"></i>
+                Recreate Plugin
+            </h3>
+            <button onclick="hideRecreateModal()" style="width: 32px; height: 32px; border: none; background: #f3f4f6; border-radius: 8px; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div style="background: #fee2e2; border: 1px solid #fca5a5; border-radius: 8px; padding: 12px; margin-bottom: 20px;">
+            <div style="display: flex; align-items-start; gap: 8px;">
+                <i class="fas fa-exclamation-triangle" style="color: #dc2626; margin-top: 2px;"></i>
+                <div>
+                    <strong style="color: #991b1b; font-size: 13px;">Previous Error:</strong>
+                    <p style="color: #7f1d1d; font-size: 12px; margin: 4px 0 0 0; line-height: 1.5;">
+                        {{ plugin.error_message[:200] if plugin.error_message else 'Compilation failed' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
+            You can modify the plugin parameters below before recreating, or keep the original values.
+        </p>
+        
+        <form id="recreateForm">
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                    Plugin Name
+                </label>
+                <input type="text" id="recreatePluginName" value="{{ plugin.name }}" 
+                       style="width: 100%; padding: 10px; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px;">
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                        Version
+                    </label>
+                    <input type="text" id="recreateVersion" value="{{ plugin.version }}" 
+                           style="width: 100%; padding: 10px; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                        MC Version
+                    </label>
+                    <select id="recreateMCVersion" 
+                            style="width: 100%; padding: 10px; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px;">
+                        <option value="1.20.1" {% if plugin.minecraft_version == '1.20.1' %}selected{% endif %}>1.20.1</option>
+                        <option value="1.20" {% if plugin.minecraft_version == '1.20' %}selected{% endif %}>1.20</option>
+                        <option value="1.19.4" {% if plugin.minecraft_version == '1.19.4' %}selected{% endif %}>1.19.4</option>
+                        <option value="1.19.3" {% if plugin.minecraft_version == '1.19.3' %}selected{% endif %}>1.19.3</option>
+                        <option value="1.19.2" {% if plugin.minecraft_version == '1.19.2' %}selected{% endif %}>1.19.2</option>
+                        <option value="1.18.2" {% if plugin.minecraft_version == '1.18.2' %}selected{% endif %}>1.18.2</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                    Description
+                </label>
+                <textarea id="recreateDescription" rows="4" 
+                          style="width: 100%; padding: 10px; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px; resize: vertical;">{{ plugin.description }}</textarea>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 6px;">
+                    Features (optional)
+                </label>
+                <textarea id="recreateFeatures" rows="3" 
+                          style="width: 100%; padding: 10px; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px; resize: vertical;">{{ plugin.features or '' }}</textarea>
+            </div>
+            
+            <div style="display: flex; gap: 12px;">
+                <button type="button" onclick="hideRecreateModal()" 
+                        style="flex: 1; padding: 12px; background: #f3f4f6; color: #374151; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" id="recreateBtn"
+                        style="flex: 1; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 500; cursor: pointer;">
+                    <i class="fas fa-redo"></i> Recreate Plugin
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Auto-resize textarea
+const textarea = document.getElementById('messageInput');
+textarea.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+});
+
+// Handle Enter key (send) vs Shift+Enter (new line)
+textarea.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+    }
+});
+
+// Auto-scroll to bottom
+function scrollToBottom() {
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Initial scroll
+setTimeout(scrollToBottom, 100);
+
+// Handle form submission
+document.getElementById('chatForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const input = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Disable input and button - UPGRADE 3: Loading Indicator
+    input.disabled = true;
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="display: inline-block; width: 12px; height: 12px; border: 2px solid #FEE8B7; border-top-color: #FC8805; border-radius: 50%; animation: spin 0.6s linear infinite;"></span> Sending...</span>';
+    
+    // Add user message immediately
+    addMessageToChat('user', message);
+    input.value = '';
+    input.style.height = 'auto';
+    
+    try {
+        const response = await fetch('/api/chat/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: '{{ chat.id if chat else plugin.id }}',
+                plugin_id: '{{ plugin.id }}',
+                message: message
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Check if plugin was modified
+            if (data.plugin_modified) {
+                // Show special notification for plugin modification
+                showAlert('success', '✅ Plugin code modified and recompiled successfully!');
+                
+                // Add visual indicator in chat
+                setTimeout(() => {
+                    const modificationNotice = document.createElement('div');
+                    modificationNotice.style.cssText = `
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        padding: 16px;
+                        border-radius: 12px;
+                        margin: 16px 0;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                    `;
+                    modificationNotice.innerHTML = `
+                        <i class="fas fa-code" style="font-size: 24px;"></i>
+                        <div>
+                            <strong style="display: block; margin-bottom: 4px;">Plugin Code Modified</strong>
+                            <span style="font-size: 13px; opacity: 0.9;">The AI has successfully modified and recompiled your plugin. Download the new version above.</span>
+                        </div>
+                    `;
+                    
+                    const chatContainer = document.querySelector('#chatMessages > div[style*="max-width: 800px"]');
+                    if (chatContainer) {
+                        chatContainer.appendChild(modificationNotice);
+                        scrollToBottom();
+                    }
+                }, 500);
+                
+                // Update page after 2 seconds to show new download button if needed
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2500);
+            }
+            
+            // Add AI response
+            setTimeout(() => {
+                addMessageToChat('assistant', data.content || data.message || 'Resposta recebida.');
+            }, data.plugin_modified ? 0 : 500);
+        } else {
+            showAlert('error', 'Erro: ' + (data.error || 'Falha ao enviar mensagem'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert('error', 'Erro de conexão. Tente novamente.');
+    }
+    
+    // Re-enable input and button
+    input.disabled = false;
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+    input.focus();
+});
+
+// Add message to chat
+function addMessageToChat(role, content) {
+    const chatMessages = document.getElementById('chatMessages');
+    const container = chatMessages.querySelector('div[style*="max-width: 800px"]');
+    
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.style.marginBottom = '24px';
+    if (role === 'user') {
+        messageDiv.style.display = 'flex';
+        messageDiv.style.justifyContent = 'flex-end';
+    }
+    
+    const bubble = document.createElement('div');
+    bubble.style.maxWidth = '80%';
+    
+    if (role === 'user') {
+        bubble.style.background = '#FC8805';
+        bubble.style.color = 'white';
+        bubble.style.borderRadius = '18px 18px 4px 18px';
+        bubble.style.padding = '12px 16px';
+    } else {
+        bubble.style.background = 'white';
+        bubble.style.border = '1px solid #e5e5e5';
+        bubble.style.borderRadius = '18px 18px 18px 4px';
+        bubble.style.padding = '16px 20px';
+    }
+    
+    bubble.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; ${role === 'user' ? 'color: rgba(255,255,255,0.9);' : 'color: #8e8e8e;'}">
+            <i class="fas fa-${role === 'user' ? 'user' : 'robot'}" style="font-size: 12px;"></i>
+            <span style="font-size: 12px; font-weight: 500;">${role === 'user' ? '{{ current_user.username }}' : 'PluginForge AI'}</span>
+        </div>
+        <div style="line-height: 1.6; ${role === 'user' ? 'color: white;' : 'color: #171717;'}">
+            ${content.replace(/\n/g, '<br>')}
+        </div>
+        <div style="margin-top: 8px; font-size: 11px; ${role === 'user' ? 'color: rgba(255,255,255,0.7);' : 'color: #a0a0a0;'}">
+            ${timeStr}
+        </div>
+    `;
+    
+    messageDiv.appendChild(bubble);
+    container.appendChild(messageDiv);
+    scrollToBottom();
+}
+
+// Suggest prompt
+function suggestPrompt(text) {
+    document.getElementById('messageInput').value = text;
+    document.getElementById('messageInput').focus();
+}
+
+// Plugin info modal
+function showPluginInfo() {
+    document.getElementById('pluginInfoModal').style.display = 'flex';
+}
+
+function hidePluginInfo() {
+    document.getElementById('pluginInfoModal').style.display = 'none';
+}
+
+// Download plugin
+function downloadPlugin() {
+    const btn = document.getElementById('downloadBtn');
+    const pluginId = btn.getAttribute('data-plugin-id');
+    
+    if (!pluginId) {
+        showAlert('error', 'ID do plugin não encontrado.');
+        return;
+    }
+    
+    // Build download URL using plugin ID
+    const downloadUrl = `/api/plugin/${pluginId}/download`;
+    
+    // Show downloading message
+    showAlert('info', 'Iniciando download...');
+    
+    // Trigger download
+    window.location.href = downloadUrl;
+}
+
+// Alert system
+function showAlert(type, message) {
+    const colors = {
+        'success': '#10b981',
+        'error': '#ef4444',
+        'info': '#3b82f6',
+        'warning': '#f59e0b'
+    };
+    
+    const alertDiv = document.createElement('div');
+    alertDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${colors[type] || colors.info};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideIn 0.3s ease-out;
+    `;
+    alertDiv.textContent = message;
+    
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => alertDiv.remove(), 300);
+    }, 3000);
+}
+
+// Recreate plugin modal functions
+function showRecreateModal() {
+    document.getElementById('recreateModal').style.display = 'flex';
+}
+
+function hideRecreateModal() {
+    document.getElementById('recreateModal').style.display = 'none';
+}
+
+// Handle recreate form submission
+document.getElementById('recreateForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const recreateBtn = document.getElementById('recreateBtn');
+    const originalText = recreateBtn.innerHTML;
+    
+    // Disable button and show loading - UPGRADE 3: Loading Indicator
+    recreateBtn.disabled = true;
+    recreateBtn.innerHTML = '<span style="display: inline-flex; align-items: center; gap: 8px;"><span style="display: inline-block; width: 14px; height: 14px; border: 2px solid #FEE8B7; border-top-color: #FC8805; border-radius: 50%; animation: spin 0.6s linear infinite;"></span> Recreating plugin...</span>';
+    
+    try {
+        const response = await fetch('/api/plugin/{{ plugin.id }}/recreate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                pluginName: document.getElementById('recreatePluginName').value,
+                pluginVersion: document.getElementById('recreateVersion').value,
+                mcVersion: document.getElementById('recreateMCVersion').value,
+                description: document.getElementById('recreateDescription').value,
+                features: document.getElementById('recreateFeatures').value
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('success', 'Plugin recreation started! Refreshing page...');
+            hideRecreateModal();
+            
+            // Refresh page after 2 seconds
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } else {
+            showAlert('error', 'Recreation failed: ' + (data.error || 'Unknown error'));
+            recreateBtn.disabled = false;
+            recreateBtn.innerHTML = originalText;
+        }
+    } catch (error) {
+        console.error('Recreate error:', error);
+        showAlert('error', 'Failed to recreate plugin. Please try again.');
+        recreateBtn.disabled = false;
+        recreateBtn.innerHTML = originalText;
+    }
+});
+
+</script>
+
+<style>
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#sendBtn:hover {
+    background: #5568d3;
+}
+</style>
+{% endblock %}

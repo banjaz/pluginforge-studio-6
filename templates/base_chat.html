@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PluginForge Studio{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            overflow-x: hidden;
+            background: #FFFFFF;
+        }
+        
+        /* FIXED HEADER - UPGRADE 6 */
+        .fixed-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #3E4146;
+            border-bottom: 2px solid #FC8805;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .header-logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .header-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(252, 136, 5, 0.3);
+        }
+        
+        .header-logo-icon i {
+            font-size: 20px;
+            color: #2F3338;
+        }
+        
+        .header-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: 0.3px;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .header-nav-link {
+            padding: 8px 16px;
+            color: #C2C5C9;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .header-nav-link:hover {
+            background: #2F3338;
+            color: #FFFFFF;
+        }
+        
+        .header-nav-link.active {
+            background: #2F3338;
+            color: #FC8805;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .upgrade-button {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+            color: #2F3338;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+        }
+        
+        .upgrade-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(252, 136, 5, 0.4);
+            color: #2F3338;
+        }
+        
+        /* Plugin Action Buttons */
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            background: #6F7275;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+        
+        .btn-icon:hover {
+            background: #FC8805;
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(252, 136, 5, 0.3);
+        }
+        
+        .btn-icon:active {
+            transform: scale(0.95);
+        }
+        
+        .user-plan-badge {
+            background: rgba(252, 136, 5, 0.15);
+            color: #FC8805;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .header-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 12px;
+            background: #2F3338;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .header-user-info:hover {
+            background: #FC8805;
+        }
+        
+        .header-user-info:hover .user-name {
+            color: #2F3338;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #2F3338;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+            transition: color 0.3s;
+        }
+        
+        /* PROFILE UPGRADE: Profile Dropdown Styles */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 280px;
+            background: #3E4146;
+            border: 2px solid #FC8805;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            overflow: hidden;
+        }
+        
+        .dropdown-user-section {
+            padding: 16px;
+            background: #2F3338;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .dropdown-user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #2F3338;
+            flex-shrink: 0;
+        }
+        
+        .dropdown-user-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 2px;
+        }
+        
+        .dropdown-user-email {
+            font-size: 12px;
+            color: #C2C5C9;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: #6F7275;
+            margin: 8px 0;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #FFFFFF;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            color: #C2C5C9;
+        }
+        
+        .dropdown-item:hover {
+            background: #2F3338;
+        }
+        
+        .dropdown-item-red {
+            color: #FFFFFF;
+        }
+        
+        .dropdown-item-red i {
+            color: #ef4444;
+        }
+        
+        .dropdown-item-red:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .dropdown-item-logout {
+            color: #ef4444;
+        }
+        
+        .dropdown-item-logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        /* App Container - Below Header */
+        .app-container {
+            display: flex;
+            margin-top: 64px;
+            height: calc(100vh - 64px);
+            width: 100vw;
+        }
+        
+        /* Sidebar Styles - Logo Colors */
+        .sidebar {
+            width: 280px;
+            background: #3E4146;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #6F7275;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid #6F7275;
+        }
+        
+        .new-chat-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: transparent;
+            border: 2px solid #FC8805;
+            color: #FC8805;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .new-chat-btn:hover {
+            background: #FC8805;
+            color: #2F3338;
+        }
+        
+        .search-box {
+            padding: 12px 16px;
+            border-bottom: 1px solid #6F7275;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #2F3338;
+            border: 2px solid #6F7275;
+            border-radius: 6px;
+            color: #FFFFFF;
+            font-size: 13px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #FC8805;
+        }
+        
+        .search-input::placeholder {
+            color: #C2C5C9;
+        }
+        
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 8px 12px;
+        }
+        
+        .chat-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-list::-webkit-scrollbar-thumb {
+            background: #6F7275;
+            border-radius: 3px;
+        }
+        
+        .chat-list::-webkit-scrollbar-track {
+            background: #2F3338;
+        }
+        
+        .chat-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #C2C5C9;
+            text-transform: uppercase;
+            padding: 12px 8px 8px 8px;
+            letter-spacing: 0.8px;
+        }
+        
+        .chat-item {
+            padding: 12px 14px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #FFFFFF;
+            border: 1px solid transparent;
+        }
+        
+        .chat-item:hover {
+            background: #2F3338;
+            color: #FFFFFF;
+            border-color: #6F7275;
+        }
+        
+        .chat-item.active {
+            background: #2F3338;
+            border-color: #FC8805;
+        }
+        
+        .chat-item-icon {
+            width: 20px;
+            text-align: center;
+            color: #FC8805;
+            font-size: 16px;
+        }
+        
+        .chat-item-content {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .chat-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #FFFFFF;
+        }
+        
+        .chat-item-meta {
+            font-size: 11px;
+            color: #C2C5C9;
+            margin-top: 2px;
+        }
+        
+        .chat-item-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .status-compiled {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+        }
+        
+        .status-generating {
+            background: #FC8805;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-error {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+        
+        .status-draft {
+            background: #C2C5C9;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* ERROR FIX 2: Removed .sidebar-footer CSS (no longer needed) */
+        
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #FFFFFF;
+            overflow: hidden;
+        }
+        
+        .main-content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .main-content-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .main-content-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .main-content-scroll::-webkit-scrollbar-thumb {
+            background: #C2C5C9;
+            border-radius: 4px;
+        }
+        
+        .main-content-scroll::-webkit-scrollbar-thumb:hover {
+            background: #6F7275;
+        }
+        
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .header-nav {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .fixed-header {
+                padding: 0 16px;
+            }
+            
+            .header-logo-text {
+                display: none;
+            }
+            
+            .user-plan-badge {
+                display: none;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 64px;
+                height: calc(100vh - 64px);
+                z-index: 999;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .mobile-toggle {
+                display: flex;
+                width: 36px;
+                height: 36px;
+                border-radius: 6px;
+                border: 1px solid #6F7275;
+                background: #2F3338;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                color: #FFFFFF;
+            }
+            
+            .overlay {
+                position: fixed;
+                top: 64px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+                display: none;
+            }
+            
+            .overlay.active {
+                display: block;
+            }
+        }
+        
+        /* Loading Spinner - UPGRADE 3 */
+        .loading-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(252, 136, 5, 0.1);
+            border: 2px solid #FC8805;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2F3338;
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #FEE8B7;
+            border-top-color: #FC8805;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #FC8805;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- FIXED HEADER -->
+    <div class="fixed-header">
+        <div class="header-left">
+            <a href="{{ url_for('dashboard') }}" class="header-logo">
+                <div class="header-logo-icon">
+                    <i class="fas fa-puzzle-piece"></i>
+                </div>
+                <span class="header-logo-text">PluginForge</span>
+            </a>
+            
+            <nav class="header-nav">
+                <a href="{{ url_for('dashboard') }}" class="header-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="{{ url_for('new_plugin') }}" class="header-nav-link {% if request.endpoint == 'new_plugin' %}active{% endif %}">
+                    <i class="fas fa-plus"></i> New Plugin
+                </a>
+                <a href="{{ url_for('plans') }}" class="header-nav-link {% if request.endpoint == 'plans' %}active{% endif %}">
+                    <i class="fas fa-star"></i> Plans
+                </a>
+            </nav>
+        </div>
+        
+        <div class="header-right">
+            <!-- Plugin Action Buttons - Loaded via plugin_chat.html header_actions block -->
+            {% block header_actions %}{% endblock %}
+            
+            {% if current_user.is_authenticated %}
+                <span class="user-plan-badge">{{ current_user.get_plan_display() }}</span>
+                <a href="{{ url_for('plans') }}" class="upgrade-button">
+                    <i class="fas fa-rocket"></i> Upgrade
+                </a>
+                <div class="header-user-info" onclick="toggleProfileDropdown(event)">
+                    <div class="user-avatar">
+                        {{ current_user.username[0]|upper }}
+                    </div>
+                    <span class="user-name">{{ current_user.username }}</span>
+                    <i class="fas fa-chevron-down" style="font-size: 10px; color: #C2C5C9;"></i>
+                </div>
+                
+                <!-- PROFILE UPGRADE: Profile Dropdown Menu -->
+                <div id="profileDropdown" class="profile-dropdown" style="display: none;">
+                    <div class="dropdown-user-section">
+                        <div class="dropdown-user-avatar">
+                            {{ current_user.username[0]|upper }}
+                        </div>
+                        <div>
+                            <div class="dropdown-user-name">{{ current_user.username }}</div>
+                            <div class="dropdown-user-email">{{ current_user.email if current_user.email else 'No email set' }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dropdown-divider"></div>
+                    
+                    <a href="{{ url_for('profile') }}" class="dropdown-item">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <a href="{{ url_for('profile') }}?section=settings" class="dropdown-item">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <a href="{{ url_for('profile') }}?section=appearance" class="dropdown-item dropdown-item-red">
+                        <i class="fas fa-palette"></i> Appearance
+                    </a>
+                    <a href="{{ url_for('profile') }}?section=accessibility" class="dropdown-item dropdown-item-red">
+                        <i class="fas fa-universal-access"></i> Accessibility
+                    </a>
+                    
+                    <div class="dropdown-divider"></div>
+                    
+                    <a href="{{ url_for('logout') }}" class="dropdown-item dropdown-item-logout">
+                        <i class="fas fa-sign-out-alt"></i> Sign out
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Overlay for mobile -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <!-- Header with New Chat -->
+            <div class="sidebar-header">
+                <button class="new-chat-btn" onclick="window.location.href='{{ url_for('new_plugin') }}'">
+                    <i class="fas fa-plus"></i>
+                    <span>New Plugin</span>
+                </button>
+            </div>
+            
+            <!-- Search Box -->
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search plugins..." 
+                       id="searchInput" onkeyup="filterChats()">
+            </div>
+            
+            <!-- Chat List -->
+            <div class="chat-list" id="chatList">
+                {% if current_user.is_authenticated %}
+                    {% set user_plugins = current_user.plugins|sort(attribute='updated_at', reverse=True) %}
+                    
+                    {% if user_plugins %}
+                        <div class="chat-section-title">My Plugins</div>
+                        
+                        {% for plugin in user_plugins %}
+                            <a href="{{ url_for('plugin_detail', plugin_id=plugin.id) }}" 
+                               class="chat-item {% if plugin.id == current_plugin_id %}active{% endif %}"
+                               data-plugin-name="{{ plugin.name|lower }}">
+                                <div class="chat-item-icon">
+                                    <i class="fas fa-puzzle-piece"></i>
+                                </div>
+                                <div class="chat-item-content">
+                                    <div class="chat-item-name">{{ plugin.name }}</div>
+                                    <div class="chat-item-meta">
+                                        MC {{ plugin.minecraft_version }} • 
+                                        {{ plugin.updated_at.strftime('%m/%d') }}
+                                    </div>
+                                </div>
+                                <div class="chat-item-status status-{{ plugin.status }}"></div>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div style="padding: 40px 20px; text-align: center;">
+                            <div style="font-size: 32px; color: #6F7275; margin-bottom: 12px;">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <div style="font-size: 13px; color: #C2C5C9;">
+                                No plugins yet
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
+            <!-- ERROR FIX 2: Removed sidebar footer user profile -->
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="main-content-scroll">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle Sidebar (Mobile)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+        
+        // PROFILE UPGRADE: Toggle Profile Dropdown
+        function toggleProfileDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown) {
+                const isVisible = dropdown.style.display === 'block';
+                dropdown.style.display = isVisible ? 'none' : 'block';
+            }
+        }
+        
+        // Filter Chats
+        function filterChats() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const chatItems = document.querySelectorAll('.chat-item');
+            
+            chatItems.forEach(item => {
+                const pluginName = item.getAttribute('data-plugin-name');
+                if (pluginName.includes(filter)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Close profile dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userInfo = document.querySelector('.header-user-info');
+            const dropdown = document.getElementById('profileDropdown');
+            
+            if (!userInfo?.contains(event.target) && dropdown) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

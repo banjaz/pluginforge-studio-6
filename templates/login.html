@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - PluginForge Studio</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #2F3338;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: #3E4146;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            max-width: 460px;
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid #6F7275;
+        }
+        
+        .header {
+            background: #2F3338;
+            color: #FFFFFF;
+            padding: 48px 40px;
+            text-align: center;
+            border-bottom: 2px solid #FC8805;
+        }
+        
+        .header .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(252, 136, 5, 0.3);
+        }
+        
+        .header .logo i {
+            font-size: 40px;
+            color: #2F3338;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+        }
+        
+        .header p {
+            color: #C2C5C9;
+            font-size: 15px;
+            font-weight: 400;
+        }
+        
+        .form-content {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #FFFFFF;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+        
+        .form-group label i {
+            color: #FC8805;
+            margin-right: 6px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #2F3338;
+            border: 2px solid #6F7275;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #FFFFFF;
+            transition: all 0.3s;
+        }
+        
+        .form-group input::placeholder {
+            color: #6F7275;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #FC8805;
+            background: #3E4146;
+            box-shadow: 0 0 0 3px rgba(252, 136, 5, 0.1);
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+            color: #2F3338;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(252, 136, 5, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 32px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: #6F7275;
+        }
+        
+        .divider span {
+            position: relative;
+            background: #3E4146;
+            padding: 0 16px;
+            color: #C2C5C9;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 24px;
+            color: #C2C5C9;
+            font-size: 14px;
+        }
+        
+        .register-link a {
+            color: #FC8805;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .register-link a:hover {
+            color: #FEE8B7;
+            text-decoration: underline;
+        }
+        
+        .demo-box {
+            background: rgba(252, 136, 5, 0.1);
+            border: 2px solid rgba(252, 136, 5, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .demo-box h6 {
+            color: #FC8805;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .demo-box p {
+            font-size: 13px;
+            color: #C2C5C9;
+            margin: 6px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .demo-box button {
+            background: transparent;
+            border: 2px solid #FC8805;
+            color: #FC8805;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.3s;
+        }
+        
+        .demo-box button:hover {
+            background: #FC8805;
+            color: #2F3338;
+        }
+        
+        .alert {
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            animation: slideDown 0.3s;
+            font-weight: 500;
+        }
+        
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #FEE8B7;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #FEE8B7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #2F3338;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-puzzle-piece"></i>
+            </div>
+            <h1>PluginForge Studio</h1>
+            <p>Professional Plugin Development Platform</p>
+        </div>
+        
+        <div class="form-content">
+            <div id="alertContainer"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+            
+            <div class="demo-box">
+                <h6><i class="fas fa-info-circle"></i> Demo Account</h6>
+                <p><strong>Username:</strong> admin</p>
+                <p><strong>Password:</strong> admin123</p>
+                <button onclick="fillDemoAccount()">
+                    <i class="fas fa-magic"></i> Use Demo Account
+                </button>
+            </div>
+            
+            <div class="divider">
+                <span>or</span>
+            </div>
+            
+            <div class="register-link">
+                <p>Don't have an account? <a href="{{ url_for('register') }}">Create Free Account</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    function fillDemoAccount() {
+        document.getElementById('username').value = 'admin';
+        document.getElementById('password').value = 'admin123';
+    }
+    
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('loginBtn');
+        const originalText = btn.innerHTML;
+        
+        btn.innerHTML = '<span class="spinner"></span> Signing in...';
+        btn.disabled = true;
+        
+        try {
+            const formData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            };
+            
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showAlert('success', '<i class="fas fa-check-circle"></i> Login successful!');
+                btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1000);
+            } else {
+                showAlert('danger', '<i class="fas fa-exclamation-circle"></i> ' + (data.error || 'Login failed'));
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            showAlert('danger', '<i class="fas fa-exclamation-triangle"></i> Connection error. Please try again.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    });
+    
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.innerHTML = message;
+        
+        const container = document.getElementById('alertContainer');
+        container.innerHTML = '';
+        container.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+    </script>
+</body>
+</html>

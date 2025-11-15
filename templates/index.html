@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PluginForge Studio - AI-Powered Minecraft Plugin Generator</title>
+    <meta name="description" content="Generate professional Minecraft plugins in minutes with AI. No coding experience required. Compile, download, and deploy instantly.">
+    <meta name="keywords" content="Minecraft, plugin generator, AI, Spigot, Bukkit, server plugins">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e5e5e5;
+            z-index: 1000;
+            padding: 16px 0;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #FC8805;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #FC8805;
+            border: 1px solid #FC8805;
+        }
+        
+        .btn-secondary:hover {
+            background: #FC8805;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: #FC8805;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #e67a04;
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 80px 24px;
+            text-align: center;
+            background: linear-gradient(135deg, #FC8805 0%, #3E4146 100%);
+            color: white;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 32px;
+            opacity: 0.95;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-hero {
+            padding: 16px 32px;
+            font-size: 16px;
+            border-radius: 12px;
+        }
+        
+        .btn-white {
+            background: white;
+            color: #FC8805;
+        }
+        
+        .btn-white:hover {
+            background: #f3f4f6;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 24px;
+            background: #f9fafb;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: #6b7280;
+            margin-bottom: 48px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FC8805 0%, #3E4146 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .feature-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+        
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.7;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 24px;
+            background: white;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 48px;
+            margin-top: 48px;
+        }
+        
+        .step {
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FC8805 0%, #3E4146 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin: 0 auto 24px;
+        }
+        
+        .step h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+        
+        .step p {
+            color: #6b7280;
+            line-height: 1.7;
+        }
+        
+        /* Benefits */
+        .benefits {
+            padding: 80px 24px;
+            background: linear-gradient(135deg, #FC8805 0%, #3E4146 100%);
+            color: white;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+        
+        .benefit {
+            text-align: center;
+        }
+        
+        .benefit-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .benefit h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .benefit p {
+            opacity: 0.9;
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: 80px 24px;
+            text-align: center;
+            background: white;
+        }
+        
+        .cta h2 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+        
+        .cta p {
+            font-size: 18px;
+            color: #6b7280;
+            margin-bottom: 32px;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 40px 24px;
+            text-align: center;
+            background: #3E4146;
+            color: white;
+        }
+        
+        footer p {
+            margin-bottom: 8px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+            
+            .nav-buttons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-hammer" style="color: #FC8805;"></i>
+                <span>PluginForge Studio</span>
+            </div>
+            <div class="nav-buttons">
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">Login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Build Minecraft Plugins with AI in Minutes</h1>
+            <p>Transform your ideas into professional Minecraft plugins instantly. No coding experience required. Powered by advanced AI technology.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('register') }}" class="btn btn-hero btn-white">
+                    <i class="fas fa-rocket"></i> Start Building Now
+                </a>
+                <a href="#how-it-works" class="btn btn-hero btn-outline">
+                    <i class="fas fa-play-circle"></i> How It Works
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features for Plugin Development</h2>
+            <p class="section-subtitle">Everything you need to create professional Minecraft plugins</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered Generation</h3>
+                    <p>Describe your plugin idea in plain English, and our advanced AI generates complete, production-ready Java code automatically.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-hammer"></i>
+                    </div>
+                    <h3>Instant Compilation</h3>
+                    <p>Automatic Maven compilation ensures your plugin is ready to deploy. Download the .jar file and install it on your server immediately.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Interactive Chat Assistant</h3>
+                    <p>Modify and improve your plugin through natural conversation. Our AI understands context and makes real-time code changes.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <h3>Version Control</h3>
+                    <p>Track all changes to your plugin with built-in version history. Revert to previous versions or compare modifications easily.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Syntax Validation</h3>
+                    <p>Automatic Java syntax checking ensures your code is error-free before compilation. Get detailed feedback on any issues.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3>Real-Time Dashboard</h3>
+                    <p>Monitor all your plugins with auto-refreshing status updates. See compilation progress and manage multiple projects effortlessly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">From idea to deployed plugin in three simple steps</p>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Describe Your Plugin</h3>
+                    <p>Tell us what you want your plugin to do in plain English. Include commands, features, events, and any specific mechanics.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>AI Generates Code</h3>
+                    <p>Our advanced AI analyzes your requirements and generates professional Java code, complete with configuration files and proper structure.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Download & Deploy</h3>
+                    <p>Get your compiled .jar file instantly. Upload it to your server's plugins folder, restart, and your plugin is live!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Benefits -->
+    <section class="benefits">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Why Choose PluginForge Studio</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">Join thousands of server owners who trust us with their plugin development</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit">
+                    <div class="benefit-icon"><i class="fas fa-clock"></i></div>
+                    <h3>Save Hours</h3>
+                    <p>What takes days to code manually, we do in minutes with AI.</p>
+                </div>
+                
+                <div class="benefit">
+                    <div class="benefit-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <h3>Free to Start</h3>
+                    <p>Create your first plugin at no cost. Upgrade only when you need more.</p>
+                </div>
+                
+                <div class="benefit">
+                    <div class="benefit-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h3>No Coding Required</h3>
+                    <p>Perfect for beginners. If you can describe it, we can build it.</p>
+                </div>
+                
+                <div class="benefit">
+                    <div class="benefit-icon"><i class="fas fa-rocket"></i></div>
+                    <h3>Production Ready</h3>
+                    <p>All plugins are compiled, tested, and ready for your live server.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Create Your First Plugin?</h2>
+            <p>Join PluginForge Studio today and start building amazing Minecraft plugins with AI</p>
+            <a href="{{ url_for('register') }}" class="btn btn-hero btn-primary">
+                <i class="fas fa-user-plus"></i> Create Free Account
+            </a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <p><strong>PluginForge Studio</strong> - AI-Powered Minecraft Plugin Generator</p>
+        <p>Developed with passion for the Minecraft community | 2025</p>
+        <p style="margin-top: 16px; font-size: 12px; opacity: 0.7;">
+            <i class="fas fa-exclamation-triangle"></i> Always test plugins in development environments before production use
+        </p>
+    </footer>
+    
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

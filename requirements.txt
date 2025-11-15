@@ -1,0 +1,21 @@
+# ========================================
+# PLUGINFORGE STUDIO - DEPENDÊNCIAS PYTHON
+# ========================================
+# Instale todas as dependências com:
+# pip install -r requirements.txt
+# ========================================
+
+# Framework Web
+Flask==3.0.0
+Werkzeug==3.0.1
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
+
+# Requisições HTTP (para chamar APIs de IA)
+requests==2.31.0
+
+# Manipulação de arquivos e paths
+pathlib2==2.3.7
+
+# Utilitários
+python-dotenv==1.0.0

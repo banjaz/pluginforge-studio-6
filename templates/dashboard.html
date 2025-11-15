@@ -1,0 +1,422 @@
+{% extends "base_chat.html" %}
+
+{% block title %}Dashboard - PluginForge Studio{% endblock %}
+
+{% block header_title %}
+    Dashboard
+{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ url_for('new_plugin') }}" class="btn-primary-custom" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-plus"></i>
+        <span>Novo Plugin</span>
+    </a>
+{% endblock %}
+
+{% block content %}
+<div style="flex: 1; overflow-y: auto; background: #f9fafb;">
+    {% if plugins %}
+        <!-- Statistics Cards -->
+        <div style="padding: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
+                <!-- Total Plugins -->
+                <div style="background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%); border-radius: 12px; padding: 20px; color: #2F3338; box-shadow: 0 4px 12px rgba(252, 136, 5, 0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">{{ plugins|length }}</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Total Plugins</div>
+                        </div>
+                        <i class="fas fa-puzzle-piece" style="font-size: 36px; opacity: 0.3;"></i>
+                    </div>
+                </div>
+                
+                <!-- Compiled -->
+                {% set compiled_count = plugins|selectattr('status', 'equalto', 'compiled')|list|length %}
+                <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px; padding: 20px; color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px;">{{ compiled_count }}</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Compiled</div>
+                        </div>
+                        <i class="fas fa-check-circle" style="font-size: 36px; opacity: 0.3;"></i>
+                    </div>
+                </div>
+                
+                <!-- Generating -->
+                {% set generating_count = plugins|selectattr('status', 'equalto', 'generating')|list|length %}
+                <div style="background: #3E4146; border: 2px solid #FC8805; border-radius: 12px; padding: 20px; color: #FFFFFF;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 32px; font-weight: 700; margin-bottom: 4px; color: #FC8805;">{{ generating_count }}</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Generating</div>
+                        </div>
+                        <i class="fas fa-cog fa-spin" style="font-size: 36px; opacity: 0.3; color: #FC8805;"></i>
+                    </div>
+                </div>
+                
+                <!-- Member Since -->
+                <div style="background: #2F3338; border: 2px solid #C2C5C9; border-radius: 12px; padding: 20px; color: #FFFFFF;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 24px; font-weight: 700; margin-bottom: 4px; color: #FEE8B7;">{{ current_user.created_at.strftime('%m/%d/%y') }}</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Member Since</div>
+                        </div>
+                        <i class="fas fa-calendar" style="font-size: 36px; opacity: 0.3; color: #C2C5C9;"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Plugins Grid -->
+            <div>
+                <h2 style="font-size: 20px; font-weight: 600; color: #2F3338; margin-bottom: 16px;">
+                    <i class="fas fa-history" style="margin-right: 8px; color: #FC8805;"></i>
+                    Recent Plugins
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                    {% for plugin in plugins|sort(attribute='updated_at', reverse=True) %}
+                        {% if loop.index <= 6 %}
+                        <a href="{{ url_for('plugin_detail', plugin_id=plugin.id) }}" 
+                           class="plugin-card"
+                           style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #e5e5e5; text-decoration: none; color: inherit; transition: all 0.2s; display: block;">
+                            <div style="display: flex; justify-content: between; align-items-start; margin-bottom: 12px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                        <h3 style="font-size: 16px; font-weight: 600; color: #171717; margin: 0;">{{ plugin.name }}</h3>
+                                        <span style="font-size: 12px; color: #8e8e8e;">v{{ plugin.version }}</span>
+                                    </div>
+                                    <p style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.5;">
+                                        {{ plugin.description[:80] }}{% if plugin.description|length > 80 %}...{% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid #f3f4f6;">
+                                <div style="display: flex; gap: 12px; font-size: 12px; color: #8e8e8e;">
+                                    <span><i class="fas fa-gamepad"></i> MC {{ plugin.minecraft_version }}</span>
+                                    <span><i class="fas fa-clock"></i> {{ plugin.updated_at.strftime('%d/%m') }}</span>
+                                </div>
+                                <span style="padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 500;
+                                    {% if plugin.status == 'compiled' %}background: #dcfce7; color: #166534;
+                                    {% elif plugin.status == 'generating' %}background: #fef3c7; color: #92400e;
+                                    {% elif plugin.status == 'error' %}background: #fee2e2; color: #991b1b;
+                                    {% else %}background: #f3f4f6; color: #374151;{% endif %}">
+                                    {{ plugin.status|title }}
+                                </span>
+                            </div>
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-puzzle-piece"></i>
+            </div>
+            <div class="empty-state-title">Start Creating Your First Plugin</div>
+            <div class="empty-state-text">
+                Use AI to generate custom Minecraft plugins in minutes.<br>
+                Then keep improving through interactive chat.
+            </div>
+            <button style="padding: 14px 28px; background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%); color: #2F3338; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(252, 136, 5, 0.3);" 
+                    onclick="window.location.href='{{ url_for('new_plugin') }}'">
+                <i class="fas fa-plus" style="margin-right: 8px;"></i>
+                Create First Plugin
+            </button>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .plugin-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Empty State - ERROR FIX 1 */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 40px;
+        text-align: center;
+        min-height: 400px;
+    }
+    
+    .empty-state-icon {
+        font-size: 80px;
+        color: #FC8805;
+        margin-bottom: 24px;
+        opacity: 0.8;
+    }
+    
+    .empty-state-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2F3338;
+        margin-bottom: 12px;
+    }
+    
+    .empty-state-text {
+        font-size: 16px;
+        color: #6F7275;
+        margin-bottom: 32px;
+        line-height: 1.6;
+        max-width: 500px;
+    }
+    
+    /* Auto-refresh indicator - UPGRADE 3 */
+    .refresh-indicator {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #3E4146;
+        border: 2px solid #FC8805;
+        border-radius: 8px;
+        padding: 12px 20px;
+        font-size: 13px;
+        color: #FFFFFF;
+        box-shadow: 0 4px 16px rgba(252, 136, 5, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 100;
+    }
+    
+    .refresh-spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid #FEE8B7;
+        border-top-color: #FC8805;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .fade-in {
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+</style>
+
+<!-- Auto-refresh indicator -->
+<div id="refreshIndicator" class="refresh-indicator" style="display: none;">
+    <div class="refresh-spinner"></div>
+    <span>Refreshing dashboard...</span>
+</div>
+
+<script>
+// Auto-refresh dashboard every 30 seconds
+let autoRefreshInterval;
+let lastRefreshTime = Date.now();
+
+function startAutoRefresh() {
+    // Clear any existing interval
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    // Set up new interval for 30 seconds
+    autoRefreshInterval = setInterval(async () => {
+        await refreshDashboard();
+    }, 30000); // 30 seconds
+    
+    console.log('Auto-refresh started (30s interval)');
+}
+
+async function refreshDashboard() {
+    try {
+        // Show refresh indicator
+        const indicator = document.getElementById('refreshIndicator');
+        if (indicator) {
+            indicator.style.display = 'flex';
+        }
+        
+        // Fetch updated plugin data
+        const response = await fetch('/api/dashboard/plugins', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch dashboard data');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.plugins) {
+            // Update plugin cards with new data
+            updatePluginCards(data.plugins);
+            updateStatistics(data.plugins);
+            lastRefreshTime = Date.now();
+        }
+        
+        // Hide refresh indicator after 1 second
+        setTimeout(() => {
+            if (indicator) {
+                indicator.style.display = 'none';
+            }
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Auto-refresh error:', error);
+        // Hide indicator on error
+        const indicator = document.getElementById('refreshIndicator');
+        if (indicator) {
+            indicator.style.display = 'none';
+        }
+    }
+}
+
+function updatePluginCards(plugins) {
+    // Sort plugins by updated_at (most recent first)
+    const sortedPlugins = plugins.sort((a, b) => 
+        new Date(b.updated_at) - new Date(a.updated_at)
+    );
+    
+    // Get the plugin grid container
+    const gridContainer = document.querySelector('[style*="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))"]');
+    
+    if (!gridContainer) return;
+    
+    // Clear existing cards
+    gridContainer.innerHTML = '';
+    
+    // Display up to 6 recent plugins
+    sortedPlugins.slice(0, 6).forEach(plugin => {
+        const card = createPluginCard(plugin);
+        gridContainer.appendChild(card);
+    });
+}
+
+function createPluginCard(plugin) {
+    const card = document.createElement('a');
+    card.href = `/plugin/${plugin.id}`;
+    card.className = 'plugin-card fade-in';
+    card.style.cssText = 'background: white; border-radius: 12px; padding: 20px; border: 1px solid #e5e5e5; text-decoration: none; color: inherit; transition: all 0.2s; display: block;';
+    
+    // Status badge colors
+    let statusStyle = '';
+    let statusText = plugin.status;
+    let statusIcon = '';
+    
+    switch (plugin.status) {
+        case 'compiled':
+            statusStyle = 'background: #dcfce7; color: #166534;';
+            statusText = 'Compiled';
+            statusIcon = '<i class="fas fa-check-circle"></i>';
+            break;
+        case 'generating':
+            statusStyle = 'background: #fef3c7; color: #92400e;';
+            statusText = 'Generating';
+            statusIcon = '<i class="fas fa-cog fa-spin"></i>';
+            break;
+        case 'error':
+            statusStyle = 'background: #fee2e2; color: #991b1b;';
+            statusText = 'Error';
+            statusIcon = '<i class="fas fa-exclamation-triangle"></i>';
+            break;
+        default:
+            statusStyle = 'background: #f3f4f6; color: #374151;';
+            statusText = 'Draft';
+            statusIcon = '<i class="fas fa-edit"></i>';
+    }
+    
+    // Truncate description
+    const description = plugin.description.length > 80 
+        ? plugin.description.substring(0, 80) + '...' 
+        : plugin.description;
+    
+    // Format date
+    const updatedDate = new Date(plugin.updated_at);
+    const formattedDate = `${String(updatedDate.getDate()).padStart(2, '0')}/${String(updatedDate.getMonth() + 1).padStart(2, '0')}`;
+    
+    card.innerHTML = `
+        <div style="display: flex; justify-content: between; align-items-start; margin-bottom: 12px;">
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #171717; margin: 0;">${plugin.name}</h3>
+                    <span style="font-size: 12px; color: #8e8e8e;">v${plugin.version}</span>
+                </div>
+                <p style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.5;">
+                    ${description}
+                </p>
+            </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid #f3f4f6;">
+            <div style="display: flex; gap: 12px; font-size: 12px; color: #8e8e8e;">
+                <span><i class="fas fa-gamepad"></i> MC ${plugin.minecraft_version}</span>
+                <span><i class="fas fa-clock"></i> ${formattedDate}</span>
+            </div>
+            <span style="padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 500; ${statusStyle}">
+                ${statusIcon} ${statusText}
+            </span>
+        </div>
+    `;
+    
+    return card;
+}
+
+function updateStatistics(plugins) {
+    // Update total count
+    const totalCount = plugins.length;
+    const compiledCount = plugins.filter(p => p.status === 'compiled').length;
+    const generatingCount = plugins.filter(p => p.status === 'generating').length;
+    
+    // Update the stat cards
+    const statCards = document.querySelectorAll('[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] > div');
+    if (statCards.length >= 3) {
+        // Update total plugins
+        const totalDiv = statCards[0].querySelector('div[style*="font-size: 32px"]');
+        if (totalDiv) totalDiv.textContent = totalCount;
+        
+        // Update compiled count
+        const compiledDiv = statCards[1].querySelector('div[style*="font-size: 32px"]');
+        if (compiledDiv) compiledDiv.textContent = compiledCount;
+        
+        // Update generating count
+        const generatingDiv = statCards[2].querySelector('div[style*="font-size: 32px"]');
+        if (generatingDiv) generatingDiv.textContent = generatingCount;
+    }
+}
+
+// Start auto-refresh when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    startAutoRefresh();
+});
+
+// Stop auto-refresh when user navigates away
+window.addEventListener('beforeunload', () => {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+});
+
+// Pause auto-refresh when page is hidden, resume when visible
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+            console.log('Auto-refresh paused (tab hidden)');
+        }
+    } else {
+        startAutoRefresh();
+        console.log('Auto-refresh resumed (tab visible)');
+    }
+});
+</script>
+{% endblock %}

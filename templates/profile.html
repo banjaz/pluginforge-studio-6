@@ -1,0 +1,630 @@
+{% extends "base_chat.html" %}
+
+{% block title %}Profile - PluginForge Studio{% endblock %}
+
+{% block header_title %}
+    Profile Settings
+{% endblock %}
+
+{% block header_actions %}
+    <a href="{{ url_for('dashboard') }}" class="btn-icon" style="background: #3E4146; color: #FFFFFF; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; text-decoration: none; transition: all 0.3s;">
+        <i class="fas fa-home"></i>
+    </a>
+{% endblock %}
+
+{% block content %}
+<div style="flex: 1; display: flex; overflow: hidden;">
+    <!-- Profile Sidebar Navigation -->
+    <div class="profile-sidebar">
+        <div class="profile-sidebar-header">
+            <div class="profile-sidebar-avatar">
+                {{ current_user.username[0]|upper }}
+            </div>
+            <div class="profile-sidebar-name">{{ current_user.username }}</div>
+            <div class="profile-sidebar-email">{{ current_user.email if current_user.email else 'No email set' }}</div>
+        </div>
+        
+        <nav class="profile-nav">
+            <a href="?section=profile" class="profile-nav-item {% if section == 'profile' or not section %}active{% endif %}">
+                <i class="fas fa-user"></i>
+                <span>Public profile</span>
+            </a>
+            <a href="?section=account" class="profile-nav-item {% if section == 'account' %}active{% endif %}">
+                <i class="fas fa-cog"></i>
+                <span>Account</span>
+            </a>
+            <a href="?section=appearance" class="profile-nav-item {% if section == 'appearance' %}active{% endif %}">
+                <i class="fas fa-palette"></i>
+                <span>Appearance</span>
+            </a>
+            <a href="?section=accessibility" class="profile-nav-item {% if section == 'accessibility' %}active{% endif %}">
+                <i class="fas fa-universal-access"></i>
+                <span>Accessibility</span>
+            </a>
+        </nav>
+    </div>
+    
+    <!-- Profile Content Area -->
+    <div class="profile-content">
+        {% if section == 'account' %}
+            <!-- Account Settings -->
+            <div class="profile-section">
+                <h2 class="profile-section-title">Account Settings</h2>
+                <p class="profile-section-description">Manage your account settings and preferences</p>
+                
+                <div class="profile-form-group">
+                    <label class="profile-label">Username</label>
+                    <input type="text" class="profile-input" value="{{ current_user.username }}" readonly>
+                    <span class="profile-help-text">Your username cannot be changed</span>
+                </div>
+                
+                <div class="profile-form-group">
+                    <label class="profile-label">Email</label>
+                    <input type="email" class="profile-input" value="{{ current_user.email if current_user.email else '' }}" placeholder="No email set">
+                    <span class="profile-help-text">Update your email address</span>
+                </div>
+                
+                <div class="profile-form-group">
+                    <label class="profile-label">Current Plan</label>
+                    <div class="profile-plan-badge">
+                        <i class="fas fa-star"></i> {{ current_user.get_plan_display() }}
+                    </div>
+                    <a href="{{ url_for('plans') }}" class="profile-link">View all plans</a>
+                </div>
+                
+                <div class="profile-form-actions">
+                    <button class="profile-btn-secondary">Save Changes</button>
+                </div>
+            </div>
+            
+        {% elif section == 'appearance' %}
+            <!-- Appearance Settings -->
+            <div class="profile-section">
+                <h2 class="profile-section-title">Appearance</h2>
+                <p class="profile-section-description">Customize how PluginForge Studio looks for you</p>
+                
+                <div class="profile-form-group">
+                    <label class="profile-label">Theme</label>
+                    <div class="profile-theme-options">
+                        <div class="profile-theme-option active">
+                            <div class="profile-theme-preview" style="background: #2F3338; border: 2px solid #FC8805;">
+                                <div style="display: flex; gap: 4px; padding: 8px;">
+                                    <div style="width: 12px; height: 12px; background: #FC8805; border-radius: 2px;"></div>
+                                    <div style="width: 20px; height: 12px; background: #6F7275; border-radius: 2px;"></div>
+                                </div>
+                            </div>
+                            <span class="profile-theme-name">Dark</span>
+                            <i class="fas fa-check-circle" style="color: #10b981; margin-left: auto;"></i>
+                        </div>
+                        <div class="profile-theme-option" style="opacity: 0.5; cursor: not-allowed;">
+                            <div class="profile-theme-preview" style="background: #FFFFFF; border: 2px solid #e5e5e5;">
+                                <div style="display: flex; gap: 4px; padding: 8px;">
+                                    <div style="width: 12px; height: 12px; background: #FC8805; border-radius: 2px;"></div>
+                                    <div style="width: 20px; height: 12px; background: #f3f4f6; border-radius: 2px;"></div>
+                                </div>
+                            </div>
+                            <span class="profile-theme-name">Light (Coming Soon)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-form-group">
+                    <label class="profile-label">Accent Color</label>
+                    <div class="profile-color-options">
+                        <div class="profile-color-option active" style="background: #FC8805;">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="profile-color-option" style="background: #FC8805; opacity: 0.5; cursor: not-allowed;"></div>
+                        <div class="profile-color-option" style="background: #10b981; opacity: 0.5; cursor: not-allowed;"></div>
+                        <div class="profile-color-option" style="background: #ef4444; opacity: 0.5; cursor: not-allowed;"></div>
+                    </div>
+                    <span class="profile-help-text">Additional colors coming soon</span>
+                </div>
+            </div>
+            
+        {% elif section == 'accessibility' %}
+            <!-- Accessibility Settings -->
+            <div class="profile-section">
+                <h2 class="profile-section-title">Accessibility</h2>
+                <p class="profile-section-description">Make PluginForge Studio work better for you</p>
+                
+                <div class="profile-setting-item">
+                    <div>
+                        <div class="profile-setting-name">Reduce motion</div>
+                        <div class="profile-setting-description">Minimize animations and transitions</div>
+                    </div>
+                    <label class="profile-toggle">
+                        <input type="checkbox">
+                        <span class="profile-toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="profile-setting-item">
+                    <div>
+                        <div class="profile-setting-name">High contrast mode</div>
+                        <div class="profile-setting-description">Increase color contrast for better visibility</div>
+                    </div>
+                    <label class="profile-toggle">
+                        <input type="checkbox">
+                        <span class="profile-toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="profile-setting-item">
+                    <div>
+                        <div class="profile-setting-name">Larger text</div>
+                        <div class="profile-setting-description">Increase base font size throughout the app</div>
+                    </div>
+                    <label class="profile-toggle">
+                        <input type="checkbox">
+                        <span class="profile-toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="profile-setting-item">
+                    <div>
+                        <div class="profile-setting-name">Keyboard shortcuts</div>
+                        <div class="profile-setting-description">Enable keyboard navigation shortcuts</div>
+                    </div>
+                    <label class="profile-toggle">
+                        <input type="checkbox" checked>
+                        <span class="profile-toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+        {% else %}
+            <!-- Public Profile (Default) -->
+            <div class="profile-section">
+                <h2 class="profile-section-title">Public Profile</h2>
+                <p class="profile-section-description">This information is visible to other users</p>
+                
+                <div class="profile-avatar-section">
+                    <div class="profile-large-avatar">
+                        {{ current_user.username[0]|upper }}
+                    </div>
+                    <div>
+                        <button class="profile-btn-secondary">Change Avatar</button>
+                        <p class="profile-help-text">Update your profile picture</p>
+                    </div>
+                </div>
+                
+                <div class="profile-form-group">
+                    <label class="profile-label">Display Name</label>
+                    <input type="text" class="profile-input" value="{{ current_user.username }}">
+                    <span class="profile-help-text">This is how your name will appear to other users</span>
+                </div>
+                
+                <div class="profile-form-group">
+                    <label class="profile-label">Bio</label>
+                    <textarea class="profile-textarea" rows="4" placeholder="Tell us about yourself..."></textarea>
+                    <span class="profile-help-text">A brief description of yourself</span>
+                </div>
+                
+                <div class="profile-stats-grid">
+                    <div class="profile-stat-card">
+                        <div class="profile-stat-value">{{ current_user.plugins|length }}</div>
+                        <div class="profile-stat-label">Total Plugins</div>
+                    </div>
+                    <div class="profile-stat-card">
+                        <div class="profile-stat-value">{{ current_user.plugins|selectattr('status', 'equalto', 'compiled')|list|length }}</div>
+                        <div class="profile-stat-label">Compiled</div>
+                    </div>
+                    <div class="profile-stat-card">
+                        <div class="profile-stat-value">{{ current_user.created_at.strftime('%b %Y') }}</div>
+                        <div class="profile-stat-label">Member Since</div>
+                    </div>
+                </div>
+                
+                <div class="profile-form-actions">
+                    <button class="profile-btn-primary">Save Changes</button>
+                    <button class="profile-btn-secondary">Cancel</button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    /* Profile Sidebar */
+    .profile-sidebar {
+        width: 280px;
+        background: #3E4146;
+        border-right: 2px solid #6F7275;
+        overflow-y: auto;
+    }
+    
+    .profile-sidebar-header {
+        padding: 24px;
+        text-align: center;
+        border-bottom: 1px solid #6F7275;
+    }
+    
+    .profile-sidebar-avatar {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 700;
+        color: #2F3338;
+    }
+    
+    .profile-sidebar-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 4px;
+    }
+    
+    .profile-sidebar-email {
+        font-size: 13px;
+        color: #C2C5C9;
+    }
+    
+    .profile-nav {
+        padding: 16px 12px;
+    }
+    
+    .profile-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        color: #C2C5C9;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        transition: all 0.2s;
+        font-size: 14px;
+    }
+    
+    .profile-nav-item i {
+        width: 20px;
+        text-align: center;
+    }
+    
+    .profile-nav-item:hover {
+        background: #2F3338;
+        color: #FFFFFF;
+    }
+    
+    .profile-nav-item.active {
+        background: #2F3338;
+        color: #FC8805;
+        border-left: 3px solid #FC8805;
+    }
+    
+    /* Profile Content */
+    .profile-content {
+        flex: 1;
+        overflow-y: auto;
+        background: #f9fafb;
+        padding: 40px;
+    }
+    
+    .profile-section {
+        max-width: 700px;
+    }
+    
+    .profile-section-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2F3338;
+        margin-bottom: 8px;
+    }
+    
+    .profile-section-description {
+        font-size: 15px;
+        color: #6F7275;
+        margin-bottom: 32px;
+    }
+    
+    .profile-form-group {
+        margin-bottom: 24px;
+    }
+    
+    .profile-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #2F3338;
+        margin-bottom: 8px;
+    }
+    
+    .profile-input,
+    .profile-textarea {
+        width: 100%;
+        padding: 12px;
+        background: #FFFFFF;
+        border: 2px solid #e5e5e5;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #2F3338;
+        transition: all 0.2s;
+    }
+    
+    .profile-input:focus,
+    .profile-textarea:focus {
+        outline: none;
+        border-color: #FC8805;
+    }
+    
+    .profile-textarea {
+        resize: vertical;
+        font-family: inherit;
+    }
+    
+    .profile-help-text {
+        display: block;
+        margin-top: 6px;
+        font-size: 12px;
+        color: #6F7275;
+    }
+    
+    .profile-link {
+        color: #FC8805;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    
+    .profile-link:hover {
+        text-decoration: underline;
+    }
+    
+    .profile-plan-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+        color: #2F3338;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .profile-avatar-section {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 32px;
+        padding: 24px;
+        background: #FFFFFF;
+        border-radius: 12px;
+    }
+    
+    .profile-large-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        font-weight: 700;
+        color: #2F3338;
+        flex-shrink: 0;
+    }
+    
+    .profile-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+    
+    .profile-stat-card {
+        background: #FFFFFF;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        border: 2px solid #e5e5e5;
+    }
+    
+    .profile-stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #FC8805;
+        margin-bottom: 4px;
+    }
+    
+    .profile-stat-label {
+        font-size: 12px;
+        color: #6F7275;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .profile-form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 32px;
+    }
+    
+    .profile-btn-primary,
+    .profile-btn-secondary {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+    }
+    
+    .profile-btn-primary {
+        background: linear-gradient(135deg, #FC8805 0%, #FEE8B7 100%);
+        color: #2F3338;
+    }
+    
+    .profile-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(252, 136, 5, 0.3);
+    }
+    
+    .profile-btn-secondary {
+        background: #FFFFFF;
+        color: #2F3338;
+        border: 2px solid #e5e5e5;
+    }
+    
+    .profile-btn-secondary:hover {
+        border-color: #FC8805;
+    }
+    
+    /* Theme Options */
+    .profile-theme-options {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .profile-theme-option {
+        flex: 1;
+        padding: 16px;
+        background: #FFFFFF;
+        border: 2px solid #e5e5e5;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .profile-theme-option.active {
+        border-color: #FC8805;
+    }
+    
+    .profile-theme-preview {
+        width: 100%;
+        height: 80px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .profile-theme-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: #2F3338;
+    }
+    
+    /* Color Options */
+    .profile-color-options {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .profile-color-option {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFFFFF;
+        font-size: 18px;
+        border: 3px solid transparent;
+    }
+    
+    .profile-color-option.active {
+        border-color: #2F3338;
+        transform: scale(1.1);
+    }
+    
+    /* Accessibility Settings */
+    .profile-setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        background: #FFFFFF;
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .profile-setting-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #2F3338;
+        margin-bottom: 4px;
+    }
+    
+    .profile-setting-description {
+        font-size: 13px;
+        color: #6F7275;
+    }
+    
+    /* Toggle Switch */
+    .profile-toggle {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 28px;
+    }
+    
+    .profile-toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .profile-toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e5e5e5;
+        transition: 0.3s;
+        border-radius: 28px;
+    }
+    
+    .profile-toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+    }
+    
+    .profile-toggle input:checked + .profile-toggle-slider {
+        background-color: #FC8805;
+    }
+    
+    .profile-toggle input:checked + .profile-toggle-slider:before {
+        transform: translateX(24px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .profile-sidebar {
+            display: none;
+        }
+        
+        .profile-content {
+            padding: 24px 16px;
+        }
+        
+        .profile-stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

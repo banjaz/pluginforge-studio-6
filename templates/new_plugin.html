@@ -1,0 +1,310 @@
+{% extends "base_chat.html" %}
+
+{% block title %}Novo Plugin - PluginForge Studio{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{{ url_for('dashboard') }}" class="text-decoration-none">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Novo Plugin</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h1 class="h2 text-primary mb-1">
+                        <i class="fas fa-plus me-2"></i>
+                        Criar Novo Plugin
+                    </h1>
+                    <p class="text-muted">Use nossa IA para gerar seu plugin Minecraft personalizado</p>
+                </div>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Voltar ao Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário de Criação -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-magic me-2"></i>
+                        Configurações do Plugin
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="pluginForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="pluginName" class="form-label">
+                                        <i class="fas fa-tag me-1"></i>
+                                        Nome do Plugin *
+                                    </label>
+                                    <input type="text" class="form-control" id="pluginName" name="pluginName" 
+                                           placeholder="Ex: WelcomePlugin" required>
+                                    <div class="form-text">Sem espaços, ex: WelcomePlugin</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="pluginVersion" class="form-label">
+                                        <i class="fas fa-hashtag me-1"></i>
+                                        Versão
+                                    </label>
+                                    <input type="text" class="form-control" id="pluginVersion" name="pluginVersion" 
+                                           value="1.0.0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="mcVersion" class="form-label">
+                                        <i class="fas fa-gamepad me-1"></i>
+                                        Versão do Minecraft
+                                    </label>
+                                    <select class="form-select" id="mcVersion" name="mcVersion">
+                                        <option value="1.20.1" selected>1.20.1 (Recomendado)</option>
+                                        <option value="1.19.4">1.19.4</option>
+                                        <option value="1.18.2">1.18.2</option>
+                                        <option value="1.17.1">1.17.1</option>
+                                        <option value="1.16.5">1.16.5</option>
+                                        <option value="1.15.2">1.15.2</option>
+                                        <option value="1.14.4">1.14.4</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="author" class="form-label">
+                                        <i class="fas fa-user me-1"></i>
+                                        Autor
+                                    </label>
+                                    <input type="text" class="form-control" id="author" name="author" 
+                                           value="{{ current_user.username }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-edit me-1"></i>
+                                Descrição do Plugin *
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="4" 
+                                      placeholder="Descreva o que seu plugin deve fazer. Seja específico sobre funcionalidades, comandos, eventos, etc." required></textarea>
+                            <div class="form-text">Descreva detalhadamente o que o plugin deve fazer</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="features" class="form-label">
+                                <i class="fas fa-list me-1"></i>
+                                Funcionalidades Específicas (Opcional)
+                            </label>
+                            <textarea class="form-control" id="features" name="features" rows="3" 
+                                      placeholder="Liste funcionalidades específicas como comandos, eventos, configurações..."></textarea>
+                            <div class="form-text">Ex: Comando /ola, evento PlayerJoin, mensagens de boas-vindas</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" id="generateBtn">
+                                <i class="fas fa-magic me-2"></i>
+                                Gerar Plugin com IA
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar com Dicas -->
+        <div class="col-lg-4">
+            <div class="card bg-info text-white mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-lightbulb me-1"></i>
+                        Dicas para Melhor Resultado
+                    </h6>
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="mb-2">
+                            <i class="fas fa-check me-1"></i>
+                            Seja específico na descrição
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check me-1"></i>
+                            Mencione comandos desejados
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check me-1"></i>
+                            Especifique eventos a serem tratados
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-check me-1"></i>
+                            Descreva o comportamento esperado
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Exemplos -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">
+                        <i class="fas fa-example me-1"></i>
+                        Exemplos de Descrição
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Plugin de Boas-vindas:</strong>
+                        <p class="small text-muted mb-0">
+                            "Plugin que envia mensagem personalizada quando players entram no servidor"
+                        </p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Plugin de Economía:</strong>
+                        <p class="small text-muted mb-0">
+                            "Sistema de dinheiro com comandos /dinheiro, /pagar, /loja"
+                        </p>
+                    </div>
+                    <div>
+                        <strong>Plugin de Teleporte:</strong>
+                        <p class="small text-muted mb-0">
+                            "Sistema de teleporte com /tpa, /tpaccept, /tpdeny"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progresso de Geração -->
+    <div class="row mt-4" id="generationProgress" style="display: none;">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-cog fa-spin me-2"></i>
+                        Gerando seu Plugin...
+                    </h6>
+                    <div class="progress mb-2">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%" id="progressBar"></div>
+                    </div>
+                    <p class="mb-0 small text-muted" id="progressText">Iniciando geração...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('pluginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('generateBtn');
+    const progressDiv = document.getElementById('generationProgress');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    
+    // Validar nome do plugin
+    const pluginName = document.getElementById('pluginName').value.trim();
+    if (pluginName.includes(' ')) {
+        showAlert('warning', 'O nome do plugin não pode conter espaços.');
+        return;
+    }
+    
+    // Mostrar progresso
+    progressDiv.style.display = 'block';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Gerando...';
+    
+    // Simular progresso
+    const steps = [
+        { text: 'Analisando descrição...', progress: 20 },
+        { text: 'Gerando código Java...', progress: 50 },
+        { text: 'Criando plugin.yml...', progress: 70 },
+        { text: 'Compilando projeto...', progress: 90 },
+        { text: 'Finalizando plugin...', progress: 100 }
+    ];
+    
+    for (let step of steps) {
+        progressBar.style.width = step.progress + '%';
+        progressText.textContent = step.text;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    try {
+        const formData = {
+            pluginName: pluginName,
+            pluginVersion: document.getElementById('pluginVersion').value,
+            mcVersion: document.getElementById('mcVersion').value,
+            description: document.getElementById('description').value,
+            features: document.getElementById('features').value,
+            author: document.getElementById('author').value
+        };
+        
+        progressText.textContent = 'Enviando para a IA...';
+        
+        const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            progressText.textContent = 'Plugin gerado com sucesso!';
+            btn.innerHTML = '<i class="fas fa-check me-2"></i>Sucesso!';
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                window.location.href = `/plugin/${data.plugin_id}`;
+            }, 1500);
+        } else {
+            throw new Error(data.error || 'Erro na geração');
+        }
+    } catch (error) {
+        progressText.textContent = 'Erro na geração: ' + error.message;
+        progressBar.style.width = '0%';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-magic me-2"></i>Gerar Plugin com IA';
+        showAlert('danger', error.message);
+    }
+});
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

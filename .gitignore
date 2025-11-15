@@ -1,0 +1,40 @@
+# ========================================
+# PLUGINFORGE STUDIO - .gitignore
+# ========================================
+# Arquivos e diretórios que não devem ser versionados
+# ========================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Flask
+instance/
+.webassets-cache
+
+# Workspace (projetos temporários gerados)
+workspace/
+!workspace/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Configurações sensíveis
+.env
+config.local.py
